@@ -2,34 +2,57 @@
 % Please edit documentation in R/HubHits.R
 \name{HubHits}
 \alias{HubHits}
-\title{Quantify topic occurence in ExperimentHub resources and combine package
-related resources}
+\alias{prop.HubHits}
+\alias{print.HubHits}
+\title{Quantify topic occurence in *Hub resources and combine package related
+resources}
 \usage{
 HubHits(topics, pkg_pattern, hub = c("ExperimentHub", "AnnotationHub"))
+
+prop.HubHits(x)
+
+\method{print}{HubHits}(x)
 }
 \arguments{
-\item{topics}{`character()` A vector of topics to query `ExperimentHub`
+\item{topics}{\code{character()} A vector of topics to query \code{ExperimentHub}
 resources with}
 
-\item{pkg_pattern}{`character(1)` A pattern to use for searching through
-packages that expose `ExperimentHub` resources related to `topics`}
+\item{pkg_pattern}{\code{character(1)} A pattern to use for searching through
+packages that expose \code{ExperimentHub} resources related to \code{topics}}
 
-\item{hub}{`character(1)` Either 'ExperimentHub' or 'AnnotationHub'
+\item{hub}{\code{character(1)} Either 'ExperimentHub' or 'AnnotationHub'
 indicating which hub to query resources from}
+
+\item{x}{\code{HubHits} An instance of \code{HubHits} as returned by the eponymous
+constructor function}
 }
 \value{
-The proportion of all hub resources that match both the topics and
-  package pattern
+\itemize{
+\item HubHits: A \code{HubHits} instance
+\item prop.HubHits: The proportion of search hits to all resources in the
+specified hub
+}
 }
 \description{
-Quantify topic occurence in ExperimentHub resources and combine package
-related resources
+Quantify topic occurence in *Hub resources and combine package related
+resources
 }
-\examples{
-et <- HubHits(
-    c("cancer", "tumor"), "curated*", hub = "ExperimentHub"
-)
-# proportion
-et[1] / et[2]
+\section{Methods (by generic)}{
+\itemize{
+\item \code{print(HubHits)}: 
 
+}}
+\section{Functions}{
+\itemize{
+\item \code{prop.HubHits()}: 
+
+}}
+\examples{
+et <- HubHits(c("cancer", "tumor"), "curated*", hub = "ExperimentHub")
+
+# proportion of hits in all *Hub
+prop.HubHits(et)
+
+# print HubHits
+print.HubHits(et)
 }

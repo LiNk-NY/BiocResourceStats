@@ -1,5 +1,8 @@
-#' Quantify topic occurence in ExperimentHub resources and combine package
-#' related resources
+#' Quantify topic occurence in *Hub resources and combine package related
+#' resources
+#'
+#' @param x `HubHits` An instance of `HubHits` as returned by the eponymous
+#'   constructor function
 #'
 #' @param topics `character()` A vector of topics to query `ExperimentHub`
 #'   resources with
@@ -10,22 +13,20 @@
 #' @param hub `character(1)` Either 'ExperimentHub' or 'AnnotationHub'
 #'   indicating which hub to query resources from
 #'
-#' @return The proportion of all hub resources that match both the topics and
-#'   package pattern
+#' @return
+#' * HubHits: A `HubHits` instance
+#' * prop.HubHits: The proportion of search hits to all resources in the
+#'   specified hub
 #'
 #' @examples
-#' et <- HubHits(
-#'     c("cancer", "tumor"), "curated*", hub = "ExperimentHub"
-#' )
-#' # proportion
-#' et[1] / et[2]
+#' et <- HubHits(c("cancer", "tumor"), "curated*", hub = "ExperimentHub")
 #'
 #' @export
 HubHits <- function(
     topics, pkg_pattern, hub = c("ExperimentHub", "AnnotationHub")
 ) {
-    hub <- match.arg(hub)
-    if (identical(hub, "ExperimentHub"))
+    hubname <- match.arg(hub)
+    if (identical(hubname, "ExperimentHub"))
         hub <- ExperimentHub::ExperimentHub()
     else
         hub <- AnnotationHub::AnnotationHub()
@@ -46,12 +47,40 @@ HubHits <- function(
     res_ids <- unique(c(ah_ids, pkg_ids))
     res <- c(n.hits = length(res_ids), total = length(hub$ah_id))
     class(res) <- "HubHits"
+    attr(res, "Hub") <- hubname
+    attr(res, "topics") <- topics
+    attr(res, "pkg_pattern") <- pkg_pattern
     res
 }
 
-prop.HubHits <- function(HubHits) {
-    stopifnot(inherits(HubHits, "HubHits"))
-    prop <- HubHits['n.hits'] / HubHits["total"]
+#' @describeIn HubHits
+#'
+#' @examples
+#' # proportion of hits in all *Hub
+#' prop.HubHits(et)
+#'
+#' @export
+prop.HubHits <- function(x) {
+    stopifnot(inherits(x, "HubHits"))
+    prop <- x['n.hits'] / x["total"]
     names(prop) <- "prop.hits"
     prop
+}
+
+#' @describeIn HubHits
+#'
+#' @examples
+#' # print HubHits
+#' print.HubHits(et)
+#' @export
+print.HubHits <- function(x) {
+    topics <- attr(x, "topics")
+    pattern <- attr(x, "pkg_pattern")
+    cat(
+        "HubHits(c(", paste(sQuote(topics, FALSE), collapse = ", "), "), ",
+        sQuote(pattern, FALSE), ")\n", sep = ""
+    )
+    cat(
+        x['n.hits'], " / ", x['total'], "=", prop.HubHits(x)
+    )
 }
