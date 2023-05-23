@@ -7,28 +7,40 @@
 #' @param pkg_pattern `character(1)` A pattern to use for searching through
 #'   packages that expose `ExperimentHub` resources related to `topics`
 #'
-#' @return The proportion of all `ExperimentHub` resources that match both the
-#'   topics and package pattern
+#' @param hub `character(1)` Either 'ExperimentHub' or 'AnnotationHub'
+#'   indicating which hub to query resources from
+#'
+#' @return The proportion of all hub resources that match both the topics and
+#'   package pattern
 #'
 #' @examples
-#' et <- EHubTopicProp(c("cancer", "tumor"), "curated*")
+#' et <- HubTopicProp(
+#'     c("cancer", "tumor"), "curated*", hubtype = "AnnotationHub"
+#' )
 #'
 #' @export
-EHubTopicProp <- function(topics, pkg_pattern) {
-    eh <- ExperimentHub::ExperimentHub()
-    ehlist <- lapply(topics, query, x = eh)
-    ah_ids <- lapply(ehlist, function(x) {
+HubTopicProp <- function(
+    topics, pkg_pattern, hub = c("ExperimentHub", "AnnotationHub")
+) {
+    hubtype <- match.arg(hub)
+    if (identical(hub, "ExperimentHub"))
+        hub <- ExperimentHub::ExperimentHub()
+    else
+        hub <- AnnotationHub::AnnotationHub()
+
+    hublist <- lapply(topics, AnnotationHub::query, x = hub)
+    ah_ids <- lapply(hublist, function(x) {
         x$ah_id
     })
     ah_ids <- unique(unlist(ah_ids))
 
     pkgnames <- BiocManager::available(pkg_pattern)
-    pkg_eh <- Filter(length, lapply(pkgnames, query, x = eh))
-    pkg_ids <- lapply(pkg_eh, function(x) {
+    pkg_hub <- Filter(length, lapply(pkgnames, AnnotationHub::query, x = hub))
+    pkg_ids <- lapply(pkg_hub, function(x) {
         x$ah_id
     })
-    pkg_ids <- unique(unlist(ah_ids))
+    pkg_ids <- unique(unlist(pkg_ids))
 
     res_ids <- unique(c(ah_ids, pkg_ids))
-    length(res_ids) / length(eh$ah_id)
+    length(res_ids) / length(hub$ah_id)
 }
