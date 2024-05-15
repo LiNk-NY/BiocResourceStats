@@ -19,8 +19,9 @@
 #'   specified hub
 #'
 #' @examples
+#' if (interactive()) {
 #' et <- HubHits(c("cancer", "tumor"), "curated*", hub = "ExperimentHub")
-#'
+#' }
 #' @export
 HubHits <- function(
     topics, pkg_pattern, hub = c("ExperimentHub", "AnnotationHub")
@@ -56,9 +57,10 @@ HubHits <- function(
 #' @describeIn HubHits
 #'
 #' @examples
+#' if (interactive()) {
 #' # proportion of hits in all *Hub
 #' prop.HubHits(et)
-#'
+#' }
 #' @export
 prop.HubHits <- function(x) {
     stopifnot(inherits(x, "HubHits"))
@@ -70,8 +72,10 @@ prop.HubHits <- function(x) {
 #' @describeIn HubHits
 #'
 #' @examples
+#' if (interactive()) {
 #' # print HubHits
-#' print.HubHits(et)
+#' et
+#' }
 #' @export
 print.HubHits <- function(x) {
     topics <- attr(x, "topics")

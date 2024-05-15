@@ -48,11 +48,15 @@ resources
 
 }}
 \examples{
+if (interactive()) {
 et <- HubHits(c("cancer", "tumor"), "curated*", hub = "ExperimentHub")
-
+}
+if (interactive()) {
 # proportion of hits in all *Hub
 prop.HubHits(et)
-
+}
+if (interactive()) {
 # print HubHits
-print.HubHits(et)
+et
+}
 }
